@@ -142,7 +142,11 @@ const login = [
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
-      const token = jwt.sign({ user_id: user.user_id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7D' });
+      const token = jwt.sign(
+        { user_id: user.user_id, role: user.role, first_name: user.first_name },
+        process.env.JWT_SECRET,
+        { expiresIn: '7D' }
+      );
       res.json({ token, role: user.role });
     } catch (error) {
       res.status(500).json({ error: 'Database error: ' + error.message });

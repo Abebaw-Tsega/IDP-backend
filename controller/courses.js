@@ -57,7 +57,6 @@ const createCourse = [
 ];
 
 // Get all courses (public)
-// university/controller/course.js
 const getAllCourses = async (req, res) => {
   try {
     const [courses] = await dbConnection.query(

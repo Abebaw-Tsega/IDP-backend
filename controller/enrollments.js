@@ -71,7 +71,6 @@ const createEnrollment = [
 ];
 
 // Get all enrollments (admin) or user's enrollments (student)
-// university/controller/enrollments.js
 const getAllEnrollments = async (req, res) => {
   const user = req.user;
 
