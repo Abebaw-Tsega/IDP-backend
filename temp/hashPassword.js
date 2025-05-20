@@ -1,3 +1,3 @@
 // university/temp/hashPassword.js
 const bcrypt = require('bcryptjs');
-console.log(bcrypt.hashSync('admin1234', 10));
+console.log(bcrypt.hashSync('12345678', 10));

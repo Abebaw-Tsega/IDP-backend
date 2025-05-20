@@ -35,9 +35,11 @@ CREATE TABLE IF NOT EXISTS Courses (
     course_name VARCHAR(100) NOT NULL,
     course_code VARCHAR(10) NOT NULL UNIQUE,
     department_id INT,
+    semester_id INT,
     credits INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (department_id) REFERENCES Departments(department_id) ON DELETE SET NULL
+    FOREIGN KEY (department_id) REFERENCES Departments(department_id) ON DELETE SET NULL,
+    FOREIGN KEY (semester_id) REFERENCES Semesters(semester_id) ON DELETE SET NULL
 );
 
 -- Create Enrollments table with status column

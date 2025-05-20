@@ -11,6 +11,8 @@ const semesterRoutes = require('./routes/semesterRoute');
 const enrollmentRoutes = require('./routes/enrollmentRoute');
 const courseAssignmentRoutes = require('./routes/courseAssignmentRoute');
 const cors = require('cors'); // Add cors
+const studentRoutes = require('./routes/studentRoute'); // Add
+
 
 
 dotenv.config();
@@ -44,6 +46,10 @@ app.use('/api/enrollments', enrollmentRoutes);
 
 //mount course-assignments routes
 app.use('/api/course-assignments', courseAssignmentRoutes);
+
+//mout student routes
+app.use('/api/student', studentRoutes); 
+
 
 // Initialize database schema
 async function initializeDatabase() {
