@@ -64,6 +64,15 @@ CREATE TABLE IF NOT EXISTS CourseAssignments (
     UNIQUE (instructor_id, course_id)
 );
 
+CREATE TABLE IF NOT EXISTS Grades (
+  grade_id INT AUTO_INCREMENT PRIMARY KEY,
+  enrollment_id INT NOT NULL,
+  grade VARCHAR(5), -- e.g., 'A', 'B+', '90'
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  FOREIGN KEY (enrollment_id) REFERENCES Enrollments(enrollment_id)
+);
+
 
 -- Add foreign key to Users.department_id if it doesn't exist
 SET @constraint_exists = (

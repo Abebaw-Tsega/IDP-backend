@@ -1,7 +1,7 @@
 // university/routes/userRoute.js
 const express = require('express');
 const router = express.Router();
-const { registerStudent, registerInstructor, registerAdmin, login, getUserById, getUserList, updateUser, deleteUser } = require('../controller/users');
+const { registerStudent, registerInstructor, registerAdmin, login, getUserById, getUserList, getUsers, updateUser, deleteUser } = require('../controller/users');
 const { authenticate, restrictTo } = require('../middleware/auth');
 
 router.put('/users/:id', authenticate, restrictTo('admin'), updateUser);
@@ -20,6 +20,8 @@ router.get('/users/list', (req, res, next) => {
   console.log('GET /users/list route hit');
   next();
 }, authenticate, restrictTo('admin'), getUserList);
+router.get('/users', getUsers); // Define the /users route
+
 
 router.get('/users/:id', authenticate, getUserById);
 

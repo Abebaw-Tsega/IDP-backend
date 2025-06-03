@@ -99,8 +99,25 @@ const deleteCourseAssignment = [
   }
 ];
 
+const getCourseAssignments = async (req, res) => {
+  try {
+    const instructorId = req.user.user_id; // From JWT middleware
+    const [assignments] = await dbConnection.query(
+      'SELECT ca.assignment_id, ca.course_id, c.course_name, c.course_code, ca.instructor_id, ca.semester, ca.academic_year ' +
+      'FROM CourseAssignments ca ' +
+      'JOIN Courses c ON ca.course_id = c.course_id ' +
+      'WHERE ca.instructor_id = ?',
+      [instructorId]
+    );
+    res.status(200).json(assignments);
+  } catch (error) {
+    console.error('Error fetching course assignments:', error);
+    res.status(500).json({ error: 'Failed to fetch course assignments' });
+  }
+};
 module.exports = {
   createCourseAssignment,
   getAllCourseAssignments,
-  deleteCourseAssignment
+  deleteCourseAssignment,
+  getCourseAssignments
 };

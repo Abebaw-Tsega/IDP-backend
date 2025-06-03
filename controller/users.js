@@ -202,34 +202,16 @@ const registerUser = [
   }
 ];
 //get users
-// const getUsers = [
-//   query('role').optional().isIn(['student', 'instructor', 'admin']).withMessage('Invalid role'),
-//   async (req, res) => {
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//       return res.status(400).json({ errors: errors.array() });
-//     }
-
-//     const { role } = req.query;
-
-//     try {
-//       let query = 'SELECT user_id, email, role, id_number, first_name, last_name, phone FROM Users';
-//       let params = [];
-//       if (role) {
-//         query += ' WHERE role = ?';
-//         params.push(role);
-//       } else {
-//         query += ' ORDER BY role, user_id';
-//       }
-//       const [users] = await dbConnection.query(query, params);
-//       console.log('Fetched users:', users); // Debug
-//       res.json(users);
-//     } catch (error) {
-//       console.error('Get users error:', error);
-//       res.status(500).json({ error: 'Database error: ' + error.message });
-//     }
-//   }
-// ];
+const getUsers = async (req, res) => {
+  try {
+    const [users] = await dbConnection.query('SELECT user_id, email, role, id_number, first_name, last_name, phone FROM Users ORDER BY role, user_id');
+    console.log('Fetched users:', users);
+    res.status(200).json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+};
 //update users
 const updateUser = [
   body('email').optional().isEmail().withMessage('Invalid email'),
@@ -326,7 +308,7 @@ module.exports = {
   getUserById,
   getUserList,
   registerUser,
-  // getUsers,
+  getUsers,
   updateUser,
   deleteUser,
 };
