@@ -51,7 +51,7 @@ app.use('/api/course-assignments', courseAssignmentRoutes);
 app.use('/api/student', studentRoutes); 
 
 //mount grades
-app.use('/api', gradeRoutes);
+app.use('/api/grades', gradeRoutes);
 
 
 // Initialize database schema

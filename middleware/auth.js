@@ -3,14 +3,14 @@ const jwt = require('jsonwebtoken');
 
 const authenticate = (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
-  console.log('Auth token:', token ? 'Present' : 'Missing');
+  // console.log('Auth token:', token ? 'Present' : 'Missing');
   if (!token) {
     return res.status(401).json({ error: 'Authentication required' });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('Decoded token:', decoded);
+    // console.log('Decoded token:', decoded);
     req.user = decoded;
     next();
   } catch (error) {
@@ -19,10 +19,9 @@ const authenticate = (req, res, next) => {
   }
 };
 
-const restrictTo = (...roles) => {
+const restrictTo = (roles) => {
   return (req, res, next) => {
-    console.log('restrictTo check, user role:', req.user.role, 'allowed roles:', roles);
-    if (!roles.includes(req.user.role)) {
+    if (!req.user || !roles.includes(req.user.role)) {
       return res.status(403).json({ error: 'Unauthorized access' });
     }
     next();

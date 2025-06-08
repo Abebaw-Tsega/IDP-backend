@@ -227,13 +227,13 @@ const deleteEnrollment = [
 
 const getEnrollmentsByCourse = async (req, res) => {
   try {
-    const { courseId } = req.params;
+    const courseId = req.params.courseId;
     const [enrollments] = await dbConnection.query(
-      'SELECT e.enrollment_id, e.student_id, u.first_name, u.last_name, u.email, e.course_id, e.semester, e.academic_year ' +
+      'SELECT e.enrollment_id, e.user_id, u.first_name, u.last_name, u.email ' +
       'FROM Enrollments e ' +
-      'JOIN Users u ON e.student_id = u.user_id ' +
-      'WHERE e.course_id = ?',
-      [courseId]
+      'JOIN Users u ON e.user_id = u.user_id ' +
+      'WHERE e.course_id = ? AND u.role = ?',
+      [courseId, 'student']
     );
     res.status(200).json(enrollments);
   } catch (error) {
@@ -241,6 +241,8 @@ const getEnrollmentsByCourse = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch enrollments' });
   }
 };
+
+
 
 module.exports = {
   createEnrollment,

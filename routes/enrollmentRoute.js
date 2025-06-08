@@ -10,8 +10,7 @@ router.get('/:id', authenticate, getEnrollmentById);
 router.put('/:id', authenticate, updateEnrollment);
 router.delete('/:id', authenticate, deleteEnrollment);
 
-router.get('/enrollments/course/:courseId', authenticate, restrictTo('instructor'), getEnrollmentsByCourse);
-
+router.get('/course/:courseId', authenticate, restrictTo('instructor'), getEnrollmentsByCourse); 
 
 // console.log('Enrollment routes registered:', router.stack.map(layer => layer.route?.path).filter(Boolean));
 

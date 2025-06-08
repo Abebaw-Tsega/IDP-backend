@@ -11,7 +11,7 @@ const validateStudent = [
   body('first_name').notEmpty().withMessage('First name is required'),
   body('last_name').notEmpty().withMessage('Last name is required'),
   body('phone').optional().isMobilePhone().withMessage('Invalid phone number'),
-  body('department_id').optional().isInt().withMessage('Invalid department ID')
+  body('department_id').optional({ nullable: true }).isInt({ min: 1 }).withMessage('Invalid department ID').bail(),
 ];
 
 const validateInstructor = [
@@ -35,6 +35,7 @@ const registerStudent = [
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('Validation errors for registerStudent:', errors.array()); // Add logging
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -49,11 +50,12 @@ const registerStudent = [
       const password_hash = await bcrypt.hash(password, 10);
       const [result] = await dbConnection.query(
         'INSERT INTO Users (email, password_hash, role, id_number, first_name, last_name, phone, department_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [email, password_hash, 'student', id_number, first_name, last_name, phone, department_id]
+        [email, password_hash, 'student', id_number, first_name, last_name, phone || null, department_id || null]
       );
 
       res.status(201).json({ user_id: result.insertId, id_number, message: 'Student registered' });
     } catch (error) {
+      console.error('Register student error:', error);
       res.status(500).json({ error: 'Database error: ' + error.message });
     }
   }
@@ -297,8 +299,25 @@ const getUserById = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Database error: ' + error.message });
   }
+}; const getAllCourseAssignments = async (req, res) => {
+  try {
+    const [assignments] = await dbConnection.query(
+      `SELECT 
+        ca.assignment_id,
+        u.first_name AS instructor_name,
+        u.last_name AS instructor_last_name,
+        c.course_name,
+        ca.created_at
+       FROM CourseAssignments ca
+       JOIN Users u ON ca.instructor_id = u.user_id
+       JOIN Courses c ON ca.course_id = c.course_id`
+    );
+    res.status(200).json(assignments);
+  } catch (error) {
+    console.error('Error fetching all course assignments:', error);
+    res.status(500).json({ error: 'Failed to fetch course assignments' });
+  }
 };
-
 
 module.exports = {
   registerStudent,
@@ -311,4 +330,5 @@ module.exports = {
   getUsers,
   updateUser,
   deleteUser,
+  getAllCourseAssignments,
 };

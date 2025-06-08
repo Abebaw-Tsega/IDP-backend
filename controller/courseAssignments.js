@@ -56,20 +56,18 @@ const createCourseAssignment = [
 ];
 
 // Get all course assignments (admin-only)
-// university/controller/courseAssignments.js
 const getAllCourseAssignments = async (req, res) => {
   try {
     const [assignments] = await dbConnection.query(
-      'SELECT ca.assignment_id, ca.instructor_id, ca.course_id, ca.created_at, ' +
-      'c.course_name, CONCAT(u.first_name, " ", u.last_name) AS instructor_name ' +
+      'SELECT ca.assignment_id, ca.instructor_id, c.course_id, c.course_code, c.course_name, u.first_name, u.last_name ' +
       'FROM CourseAssignments ca ' +
       'JOIN Courses c ON ca.course_id = c.course_id ' +
       'JOIN Users u ON ca.instructor_id = u.user_id'
     );
-    res.json(assignments);
+    res.status(200).json(assignments);
   } catch (error) {
-    console.error('Get course assignments error:', error);
-    res.status(500).json({ error: 'Database error: ' + error.message });
+    console.error('Error fetching all assignments:', error);
+    res.status(500).json({ error: 'Failed to fetch all assignments' });
   }
 };
 
@@ -101,18 +99,25 @@ const deleteCourseAssignment = [
 
 const getCourseAssignments = async (req, res) => {
   try {
-    const instructorId = req.user.user_id; // From JWT middleware
-    const [assignments] = await dbConnection.query(
-      'SELECT ca.assignment_id, ca.course_id, c.course_name, c.course_code, ca.instructor_id, ca.semester, ca.academic_year ' +
+    const userId = req.user.user_id;
+    const role = req.user.role;
+
+    let query = 'SELECT ca.assignment_id, ca.instructor_id, c.course_id, c.course_code, c.course_name, u.first_name, u.last_name ' +
       'FROM CourseAssignments ca ' +
       'JOIN Courses c ON ca.course_id = c.course_id ' +
-      'WHERE ca.instructor_id = ?',
-      [instructorId]
-    );
+      'JOIN Users u ON ca.instructor_id = u.user_id ';
+    let params = [];
+
+    if (role === 'instructor') {
+      query += 'WHERE ca.instructor_id = ?';
+      params.push(userId);
+    } // Admins see all assignments without a WHERE clause
+
+    const [assignments] = await dbConnection.query(query, params);
     res.status(200).json(assignments);
   } catch (error) {
-    console.error('Error fetching course assignments:', error);
-    res.status(500).json({ error: 'Failed to fetch course assignments' });
+    console.error('Error fetching assignments:', error);
+    res.status(500).json({ error: 'Failed to fetch assignments' });
   }
 };
 module.exports = {
